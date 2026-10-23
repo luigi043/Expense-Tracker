@@ -19,7 +19,6 @@ android {
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Exchange Rate API key – replace with your key from https://exchangeratesapi.io
         buildConfigField("String", "EXCHANGE_RATE_API_KEY", "\"YOUR_API_KEY_HERE\"")
         buildConfigField("String", "BASE_URL", "\"https://api.exchangeratesapi.io/v1/\"")
     }
@@ -58,6 +57,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.splashscreen)
+    implementation(libs.google.material)
 
     // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
@@ -100,7 +100,7 @@ dependencies {
     // Serialization
     implementation(libs.kotlinx.serialization.json)
 
-    // Charts (MPAndroidChart via JitPack – add JitPack to repos in settings.gradle if needed)
+    // Charts
     implementation(libs.mpandroidchart)
 
     // PDF
