@@ -13,12 +13,9 @@ object Formatters {
     fun LocalDate.toShortDate(): String  = format(shortDate)
     fun LocalDate.toFullDate(): String   = format(fullDate)
     fun LocalDate.toMonthYear(): String  = format(monthYear)
-    fun LocalDate.dayOfWeekShort(): String =
-        getDisplayName(TextStyle.SHORT, Locale.getDefault())
 
-    private fun getDisplayName(style: TextStyle, locale: Locale): String {
-        return java.time.DayOfWeek.from(this).getDisplayName(style, locale)
-    }
+    fun LocalDate.dayOfWeekShort(): String =
+        dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
 
     fun Double.toCurrencyString(currency: String = "USD"): String =
         "%s %.2f".format(currencySymbol(currency), this)
