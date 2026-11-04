@@ -20,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.expensetracker.domain.model.Budget
 import com.expensetracker.domain.model.ExpenseCategory
+import com.expensetracker.domain.model.parsePositiveAmount
 import com.expensetracker.ui.components.*
 import com.expensetracker.ui.navigation.Screen
 import com.expensetracker.ui.screens.dashboard.AppBottomBar
@@ -37,19 +38,23 @@ fun BudgetScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var showAddDialog by remember { mutableStateOf(false) }
+    val snackbarHost = remember { SnackbarHostState() }
+    LaunchedEffect(state.error) {
+        state.error?.let { snackbarHost.showSnackbar(it); viewModel.clearError() }
+    }
 
     if (showAddDialog) {
         AddBudgetDialog(
             currency = state.currency,
             onDismiss = { showAddDialog = false },
             onSave = { category, limit ->
-                viewModel.saveBudget(category, limit)
-                showAddDialog = false
+                viewModel.saveBudget(category, limit) { showAddDialog = false }
             }
         )
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHost) },
         topBar = {
             AppTopBar(
                 title = "Budgets",
@@ -69,7 +74,7 @@ fun BudgetScreen(
             AppBottomBar(navController = navController, currentRoute = Screen.Budget.route)
         }
     ) { padding ->
-        val monthLabel = Month.of(state.month).getDisplayName(TextStyle.FULL, Locale.getDefault()) +
+        val monthLabel = Month.of(state.month).getDisplayName(TextStyle.FULL, Locale.ENGLISH) +
             " ${state.year}"
 
         LazyColumn(
@@ -81,7 +86,7 @@ fun BudgetScreen(
         ) {
             item {
                 Text(
-                    text = "Budgets for $monthLabel",
+                    text = "Budgets for $monthLabel (${state.currency})",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -224,7 +229,7 @@ private fun AddBudgetDialog(
                     value = limitText,
                     onValueChange = {
                         limitText = it
-                        limitError = if (it.toDoubleOrNull() == null || (it.toDoubleOrNull() ?: 0.0) <= 0)
+                        limitError = if (it.parsePositiveAmount() == null)
                             "Enter a valid amount" else null
                     },
                     label = { Text("Monthly Limit ($currency)") },
@@ -240,8 +245,8 @@ private fun AddBudgetDialog(
         confirmButton = {
             Button(
                 onClick = {
-                    val limit = limitText.toDoubleOrNull()
-                    if (limit != null && limit > 0) {
+                    val limit = limitText.parsePositiveAmount()
+                    if (limit != null) {
                         onSave(selectedCategory, limit)
                     } else {
                         limitError = "Enter a valid amount"

@@ -19,6 +19,7 @@ import androidx.navigation.NavController
 import com.expensetracker.domain.model.ExpenseCategory
 import com.expensetracker.domain.model.RecurringExpense
 import com.expensetracker.domain.model.TransactionType
+import com.expensetracker.domain.model.parsePositiveAmount
 import com.expensetracker.ui.components.*
 import com.expensetracker.ui.theme.AppColors
 import com.expensetracker.utils.RECURRING_INTERVALS
@@ -33,19 +34,31 @@ fun RecurringExpensesScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var showAddDialog by remember { mutableStateOf(false) }
+    var pendingDelete by remember { mutableStateOf<RecurringExpense?>(null) }
+    val snackbarHost = remember { SnackbarHostState() }
+    LaunchedEffect(state.error) {
+        state.error?.let { snackbarHost.showSnackbar(it); viewModel.clearError() }
+    }
+    pendingDelete?.let { entry ->
+        AlertDialog(onDismissRequest = { pendingDelete = null },
+            title = { Text("Delete Recurring Entry") },
+            text = { Text("Future automatic logging will stop. Existing transactions will remain.") },
+            confirmButton = { TextButton(onClick = { viewModel.delete(entry); pendingDelete = null }) { Text("Delete") } },
+            dismissButton = { TextButton(onClick = { pendingDelete = null }) { Text("Cancel") } })
+    }
 
     if (showAddDialog) {
         AddRecurringDialog(
             currency = state.currency,
             onDismiss = { showAddDialog = false },
             onSave = { amount, cat, type, note, intervalDays, currency ->
-                viewModel.add(amount, cat, type, note, intervalDays, currency)
-                showAddDialog = false
+                viewModel.add(amount, cat, type, note, intervalDays, currency) { showAddDialog = false }
             }
         )
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHost) },
         topBar = {
             AppTopBar(
                 title = "Recurring Expenses",
@@ -79,7 +92,7 @@ fun RecurringExpensesScreen(
                         item = item,
                         currency = state.currency,
                         onToggle = { viewModel.toggle(item) },
-                        onDelete = { viewModel.delete(item) }
+                        onDelete = { pendingDelete = item }
                     )
                 }
             }
@@ -119,7 +132,7 @@ private fun RecurringCard(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = item.amount.toCurrencyString(currency),
+                    text = item.amount.toCurrencyString(item.currency),
                     style = MaterialTheme.typography.bodySmall,
                     color = if (item.type == TransactionType.INCOME) AppColors.Success else AppColors.Error,
                     fontWeight = FontWeight.SemiBold
@@ -134,7 +147,7 @@ private fun RecurringCard(
             }
             Switch(checked = item.isActive, onCheckedChange = { onToggle() })
             IconButton(onClick = onDelete) {
-                Icon(Icons.Default.Delete, null, tint = MaterialTheme.colorScheme.error)
+                Icon(Icons.Default.Delete, "Delete recurring entry", tint = MaterialTheme.colorScheme.error)
             }
         }
     }
@@ -148,6 +161,7 @@ private fun AddRecurringDialog(
     onSave: (Double, ExpenseCategory, TransactionType, String, Int, String) -> Unit
 ) {
     var amount by remember { mutableStateOf("") }
+    var amountError by remember { mutableStateOf(false) }
     var selectedCat by remember { mutableStateOf(ExpenseCategory.HOUSING) }
     var selectedType by remember { mutableStateOf(TransactionType.EXPENSE) }
     var note by remember { mutableStateOf("") }
@@ -170,8 +184,10 @@ private fun AddRecurringDialog(
                     }
                 }
                 OutlinedTextField(
-                    value = amount, onValueChange = { amount = it },
+                    value = amount, onValueChange = { amount = it; amountError = false },
                     label = { Text("Amount") }, singleLine = true,
+                    isError = amountError,
+                    supportingText = if (amountError) { { Text("Enter a valid positive amount") } } else null,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp)
                 )
@@ -210,7 +226,7 @@ private fun AddRecurringDialog(
                     }
                 }
                 OutlinedTextField(
-                    value = note, onValueChange = { note = it },
+                    value = note, onValueChange = { note = it.take(500) },
                     label = { Text("Note (optional)") }, singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp)
@@ -219,7 +235,8 @@ private fun AddRecurringDialog(
         },
         confirmButton = {
             Button(onClick = {
-                val a = amount.toDoubleOrNull() ?: return@Button
+                val a = amount.parsePositiveAmount()
+                if (a == null) { amountError = true; return@Button }
                 onSave(a, selectedCat, selectedType, note, RECURRING_INTERVALS[intervalIndex].first, currency)
             }) { Text("Save") }
         },

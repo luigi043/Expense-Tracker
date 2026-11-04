@@ -6,16 +6,16 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 object Formatters {
-    private val shortDate = DateTimeFormatter.ofPattern("dd MMM", Locale.getDefault())
-    private val fullDate  = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.getDefault())
-    private val monthYear = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.getDefault())
+    private val shortDate = DateTimeFormatter.ofPattern("dd MMM", Locale.ENGLISH)
+    private val fullDate  = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH)
+    private val monthYear = DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH)
 
     fun LocalDate.toShortDate(): String  = format(shortDate)
     fun LocalDate.toFullDate(): String   = format(fullDate)
     fun LocalDate.toMonthYear(): String  = format(monthYear)
 
     fun LocalDate.dayOfWeekShort(): String =
-        dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+        dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
 
     fun Double.toCurrencyString(currency: String = "USD"): String =
         "%s %.2f".format(currencySymbol(currency), this)
@@ -36,7 +36,7 @@ val RECURRING_INTERVALS = listOf(
     1  to "Daily",
     7  to "Weekly",
     14 to "Every 2 Weeks",
-    30 to "Monthly",
-    90 to "Every 3 Months",
-    365 to "Yearly"
+    30 to "Every 30 Days",
+    90 to "Every 90 Days",
+    365 to "Every 365 Days"
 )

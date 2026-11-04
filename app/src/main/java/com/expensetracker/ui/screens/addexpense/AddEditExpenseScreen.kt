@@ -102,7 +102,7 @@ fun AddEditExpenseScreen(
             onDismissRequest = { showCurrencyPicker = false },
             title = { Text("Select Currency") },
             text = {
-                Column {
+                Column(Modifier.verticalScroll(rememberScrollState())) {
                     SUPPORTED_CURRENCIES.forEach { code ->
                         TextButton(
                             onClick = {

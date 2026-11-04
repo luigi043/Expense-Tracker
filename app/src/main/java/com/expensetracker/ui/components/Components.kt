@@ -87,7 +87,7 @@ fun TransactionItem(
     expense: Expense,
     currency: String,
     onClick: () -> Unit,
-    onDelete: () -> Unit,
+    onDelete: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -98,7 +98,7 @@ fun TransactionItem(
             title = { Text("Delete Transaction") },
             text = { Text("Are you sure you want to delete this transaction? This action cannot be undone.") },
             confirmButton = {
-                TextButton(onClick = { showDeleteDialog = false; onDelete() }) {
+                TextButton(onClick = { showDeleteDialog = false; onDelete?.invoke() }) {
                     Text("Delete", color = MaterialTheme.colorScheme.error)
                 }
             },
@@ -166,12 +166,12 @@ fun TransactionItem(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = "${if (expense.type == TransactionType.INCOME) "+" else "-"} ${expense.amount.toCurrencyString(currency)}",
+                    text = "${if (expense.type == TransactionType.INCOME) "+" else "-"} ${expense.amount.toCurrencyString(expense.currency)}",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = if (expense.type == TransactionType.INCOME) AppColors.Success else AppColors.Error
                 )
-                IconButton(
+                if (onDelete != null) IconButton(
                     onClick = { showDeleteDialog = true },
                     modifier = Modifier.size(24.dp)
                 ) {

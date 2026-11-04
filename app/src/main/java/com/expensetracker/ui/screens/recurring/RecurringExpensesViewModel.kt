@@ -25,6 +25,7 @@ class RecurringExpensesViewModel @Inject constructor(
     private val addRecurring: AddRecurringExpenseUseCase,
     private val appPreferences: AppPreferences
 ) : ViewModel() {
+    private val operationError = MutableStateFlow<String?>(null)
 
     val uiState: StateFlow<RecurringUiState> = combine(
         repository.getAllRecurring(),
@@ -33,7 +34,8 @@ class RecurringExpensesViewModel @Inject constructor(
         RecurringUiState(isLoading = false, items = items, currency = currency)
     }.catch { e ->
         emit(RecurringUiState(isLoading = false, error = e.message))
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RecurringUiState())
+    }.combine(operationError) { state, error -> state.copy(error = error ?: state.error) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), RecurringUiState())
 
     fun add(
         amount: Double,
@@ -41,7 +43,8 @@ class RecurringExpensesViewModel @Inject constructor(
         type: TransactionType,
         note: String,
         intervalDays: Int,
-        currency: String
+        currency: String,
+        onSaved: () -> Unit = {}
     ) {
         viewModelScope.launch {
             val recurring = RecurringExpense(
@@ -53,7 +56,10 @@ class RecurringExpensesViewModel @Inject constructor(
                 currency = currency,
                 nextDueDate = LocalDate.now().plusDays(intervalDays.toLong())
             )
-            addRecurring(recurring)
+            addRecurring(recurring).fold(
+                onSuccess = { operationError.value = null; onSaved() },
+                onFailure = { operationError.value = it.message ?: "Could not save the recurring entry" }
+            )
         }
     }
 
@@ -66,4 +72,5 @@ class RecurringExpensesViewModel @Inject constructor(
             repository.updateRecurring(item.copy(isActive = !item.isActive))
         }
     }
+    fun clearError() { operationError.value = null }
 }

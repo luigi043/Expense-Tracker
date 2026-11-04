@@ -59,7 +59,7 @@ fun DashboardScreen(
             else -> {
                 val summary = state.summary ?: return@Scaffold
                 val monthLabel = Month.of(state.selectedMonth)
-                    .getDisplayName(TextStyle.FULL, Locale.getDefault()) + " ${state.selectedYear}"
+                    .getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " ${state.selectedYear}"
 
                 LazyColumn(
                     modifier = Modifier
@@ -84,6 +84,8 @@ fun DashboardScreen(
                             onNext = viewModel::nextMonth,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
+                        Text("Totals and charts include ${state.currency} transactions only. Other currencies remain in history.",
+                            modifier = Modifier.padding(horizontal = 16.dp), style = MaterialTheme.typography.bodySmall)
                     }
 
                     if (summary.categoryBreakdown.isNotEmpty()) {
@@ -150,7 +152,6 @@ fun DashboardScreen(
                                 onClick = {
                                     navController.navigate(Screen.EditExpense.createRoute(expense.id))
                                 },
-                                onDelete = { },
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
                             )
                         }

@@ -34,7 +34,7 @@ fun SettingsScreen(
             onDismissRequest = { showCurrencyDialog = false },
             title = { Text("Select Base Currency") },
             text = {
-                Column {
+                Column(Modifier.verticalScroll(rememberScrollState())) {
                     SUPPORTED_CURRENCIES.forEach { code ->
                         TextButton(
                             onClick = { viewModel.setCurrency(code); showCurrencyDialog = false },
@@ -104,7 +104,7 @@ fun SettingsScreen(
                 subtitle = "Convert between currencies in real-time",
                 trailing = {
                     IconButton(onClick = { navController.navigate(Screen.CurrencyConverter.route) }) {
-                        Icon(Icons.Default.ChevronRight, null)
+                        Icon(Icons.Default.ChevronRight, "Open currency converter")
                     }
                 }
             )
@@ -115,7 +115,7 @@ fun SettingsScreen(
                 subtitle = "Manage automatic recurring transactions",
                 trailing = {
                     IconButton(onClick = { navController.navigate(Screen.RecurringExpenses.route) }) {
-                        Icon(Icons.Default.ChevronRight, null)
+                        Icon(Icons.Default.ChevronRight, "Open recurring expenses")
                     }
                 }
             )
@@ -125,7 +125,7 @@ fun SettingsScreen(
             SettingsRow(
                 icon = Icons.Default.Info,
                 title = "Version",
-                subtitle = "1.0.0 – Production Build",
+                subtitle = "1.0.0",
                 trailing = {}
             )
         }

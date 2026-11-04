@@ -1,6 +1,8 @@
 package com.expensetracker.ui.screens.converter
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -133,7 +135,7 @@ private fun CurrencyPickerDialog(onDismiss: () -> Unit, onSelect: (String) -> Un
         onDismissRequest = onDismiss,
         title = { Text("Select Currency") },
         text = {
-            Column {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
                 SUPPORTED_CURRENCIES.forEach { code ->
                     TextButton(onClick = { onSelect(code); onDismiss() }, modifier = Modifier.fillMaxWidth()) {
                         Text(code, modifier = Modifier.fillMaxWidth())
