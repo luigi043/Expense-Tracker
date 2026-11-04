@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.expensetracker.domain.model.Expense
 import com.expensetracker.domain.model.ExpenseCategory
 import com.expensetracker.domain.model.TransactionType
+import com.expensetracker.domain.model.parsePositiveAmount
 import com.expensetracker.domain.repository.ExpenseRepository
 import com.expensetracker.domain.usecase.AddExpenseUseCase
 import com.expensetracker.domain.usecase.DeleteExpenseUseCase
@@ -41,12 +42,14 @@ class AddEditExpenseViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(AddEditUiState())
     val uiState: StateFlow<AddEditUiState> = _uiState.asStateFlow()
+    private var originalExpense: Expense? = null
 
     fun loadExpense(id: Long) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val expense = repository.getExpenseById(id)
             if (expense != null) {
+                originalExpense = expense
                 _uiState.update { state ->
                     state.copy(
                         isLoading   = false,
@@ -70,7 +73,7 @@ class AddEditExpenseViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 amount = value,
-                amountError = if (value.isBlank() || value.toDoubleOrNull() == null || (value.toDoubleOrNull() ?: 0.0) <= 0)
+                amountError = if (value.parsePositiveAmount() == null)
                     "Please enter a valid positive amount" else null
             )
         }
@@ -83,7 +86,7 @@ class AddEditExpenseViewModel @Inject constructor(
         _uiState.update { it.copy(date = date) }
 
     fun onNoteChange(note: String) =
-        _uiState.update { it.copy(note = note) }
+        _uiState.update { it.copy(note = note.take(500)) }
 
     fun onTypeChange(type: TransactionType) {
         _uiState.update { state ->
@@ -105,9 +108,10 @@ class AddEditExpenseViewModel @Inject constructor(
 
     fun save(expenseId: Long?) {
         val state = _uiState.value
-        val amount = state.amount.toDoubleOrNull()
+        if (state.isLoading) return
+        val amount = state.amount.parsePositiveAmount()
 
-        if (amount == null || amount <= 0) {
+        if (amount == null) {
             _uiState.update { it.copy(amountError = "Please enter a valid positive amount") }
             return
         }
@@ -123,7 +127,9 @@ class AddEditExpenseViewModel @Inject constructor(
                 note     = state.note.trim(),
                 type     = state.type,
                 currency = state.currency,
-                isRecurring = state.isRecurring
+                isRecurring = state.isRecurring,
+                recurringId = originalExpense?.recurringId,
+                createdAt = originalExpense?.createdAt ?: System.currentTimeMillis()
             )
 
             val result = if (expenseId != null) {

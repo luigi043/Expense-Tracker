@@ -26,6 +26,7 @@ class CurrencyConverterViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ConverterUiState())
     val uiState: StateFlow<ConverterUiState> = _uiState.asStateFlow()
+    private var conversionVersion = 0L
 
     init {
         viewModelScope.launch {
@@ -51,14 +52,19 @@ class CurrencyConverterViewModel @Inject constructor(
     }
 
     fun convert() {
+        val version = ++conversionVersion
         val state = _uiState.value
-        val amountValue = state.amount.toDoubleOrNull() ?: return
+        val amountValue = state.amount.toDoubleOrNull()
+        if (amountValue == null || !amountValue.isFinite() || amountValue < 0) {
+            _uiState.update { it.copy(result = null, isLoading = false, error = "Enter a valid non-negative amount") }
+            return
+        }
 
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+            _uiState.update { it.copy(isLoading = true, error = null, result = null) }
             convertCurrency(amountValue, state.fromCurrency, state.toCurrency).fold(
-                onSuccess = { res -> _uiState.update { it.copy(isLoading = false, result = res) } },
-                onFailure = { e -> _uiState.update { it.copy(isLoading = false, error = e.message) } }
+                onSuccess = { res -> if (version == conversionVersion) _uiState.update { it.copy(isLoading = false, result = res) } },
+                onFailure = { e -> if (version == conversionVersion) _uiState.update { it.copy(isLoading = false, result = null, error = e.message) } }
             )
         }
     }

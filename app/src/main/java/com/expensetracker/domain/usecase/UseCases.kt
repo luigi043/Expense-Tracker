@@ -4,6 +4,7 @@ import com.expensetracker.domain.model.*
 import com.expensetracker.domain.repository.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -11,8 +12,8 @@ class AddExpenseUseCase @Inject constructor(
     private val repository: ExpenseRepository
 ) {
     suspend operator fun invoke(expense: Expense): Result<Long> = runCatching {
-        require(expense.amount > 0) { "Amount must be greater than zero" }
-        require(expense.note.length <= 500) { "Note must be under 500 characters" }
+        require(expense.amount.isPositiveAmount()) { "Enter a finite amount greater than zero" }
+        require(expense.note.length <= 500) { "Note must be 500 characters or fewer" }
         repository.insertExpense(expense)
     }
 }
@@ -21,7 +22,8 @@ class UpdateExpenseUseCase @Inject constructor(
     private val repository: ExpenseRepository
 ) {
     suspend operator fun invoke(expense: Expense): Result<Unit> = runCatching {
-        require(expense.amount > 0) { "Amount must be greater than zero" }
+        require(expense.amount.isPositiveAmount()) { "Enter a finite amount greater than zero" }
+        require(expense.note.length <= 500) { "Note must be 500 characters or fewer" }
         repository.updateExpense(expense)
     }
 }
@@ -52,39 +54,26 @@ class GetExpensesUseCase @Inject constructor(
 class GetDashboardSummaryUseCase @Inject constructor(
     private val expenseRepository: ExpenseRepository
 ) {
-    operator fun invoke(month: Int, year: Int): Flow<DashboardSummary> {
-        val incomeFlow = expenseRepository.getTotalByTypeAndMonth(TransactionType.INCOME, month, year)
-        val expenseFlow = expenseRepository.getTotalByTypeAndMonth(TransactionType.EXPENSE, month, year)
-        val recentFlow = expenseRepository.getExpensesByMonth(month, year)
-        val categoryFlow = expenseRepository.getCategoryBreakdown(month, year)
-        val trendFlow = expenseRepository.getDailyTrend(month, year)
-
-        return combine(incomeFlow, expenseFlow, recentFlow, categoryFlow, trendFlow) {
-                income, expense, recent, category, trend ->
-            DashboardSummary(
-                totalIncome = income,
-                totalExpense = expense,
-                balance = income - expense,
-                recentTransactions = recent.sortedByDescending { it.date }.take(10),
-                categoryBreakdown = category,
-                dailyTrend = trend
-            )
-        }
-    }
+    operator fun invoke(month: Int, year: Int, currency: String = "USD"): Flow<DashboardSummary> =
+        expenseRepository.getExpensesByMonth(month, year).map { summarizeTransactions(it, currency) }
 }
-
 class GetBudgetsUseCase @Inject constructor(
-    private val budgetRepository: BudgetRepository
+    private val budgetRepository: BudgetRepository,
+    private val expenseRepository: ExpenseRepository
 ) {
-    operator fun invoke(month: Int, year: Int): Flow<List<Budget>> =
-        budgetRepository.getBudgetWithSpending(month, year)
+    operator fun invoke(month: Int, year: Int, currency: String = "USD"): Flow<List<Budget>> =
+        combine(budgetRepository.getBudgetsForMonth(month, year), expenseRepository.getExpensesByMonth(month, year)) { budgets, expenses ->
+            budgets.map { budget -> budget.copy(spent = expenses.filter {
+                it.type == TransactionType.EXPENSE && it.category == budget.category && it.currency == currency
+            }.sumOf { it.amount }) }
+        }
 }
 
 class SetBudgetUseCase @Inject constructor(
     private val budgetRepository: BudgetRepository
 ) {
     suspend operator fun invoke(budget: Budget): Result<Unit> = runCatching {
-        require(budget.monthlyLimit > 0) { "Budget limit must be greater than zero" }
+        require(budget.monthlyLimit.isPositiveAmount()) { "Enter a finite budget limit greater than zero" }
         budgetRepository.insertOrUpdateBudget(budget)
     }
 }
@@ -93,7 +82,8 @@ class AddRecurringExpenseUseCase @Inject constructor(
     private val repository: RecurringExpenseRepository
 ) {
     suspend operator fun invoke(recurringExpense: RecurringExpense): Result<Long> = runCatching {
-        require(recurringExpense.amount > 0) { "Amount must be greater than zero" }
+        require(recurringExpense.amount.isPositiveAmount()) { "Enter a finite amount greater than zero" }
+        require(recurringExpense.note.length <= 500) { "Note must be 500 characters or fewer" }
         require(recurringExpense.intervalDays > 0) { "Interval must be at least 1 day" }
         repository.insertRecurring(recurringExpense)
     }
@@ -134,7 +124,7 @@ class ConvertCurrencyUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(amount: Double, from: String, to: String): Result<Double> =
         runCatching {
-            require(amount >= 0) { "Amount must be non-negative" }
+            require(amount.isFinite() && amount >= 0) { "Enter a finite, non-negative amount" }
             if (from == to) return@runCatching amount
             exchangeRateRepository.convert(amount, from, to)
                 ?: error("Exchange rates not available")

@@ -36,7 +36,7 @@ class DashboardViewModel @Inject constructor(
     ) { month, year, currency ->
         Triple(month, year, currency)
     }.flatMapLatest { (month, year, currency) ->
-        getDashboardSummary(month, year).map { summary ->
+        getDashboardSummary(month, year, currency).map { summary ->
             DashboardUiState(
                 isLoading = false,
                 summary = summary,
