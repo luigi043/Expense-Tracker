@@ -27,3 +27,4 @@ local.properties
 *.aab
 .claude/
 .agents/
+*.log
