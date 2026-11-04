@@ -1,7 +1,8 @@
 package com.expensetracker.utils
 
 import android.content.Context
-import android.os.Environment
+import android.net.Uri
+import androidx.core.content.FileProvider
 import com.expensetracker.domain.model.Expense
 import com.expensetracker.domain.model.TransactionType
 import com.itextpdf.text.*
@@ -14,6 +15,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.FileWriter
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,7 +23,9 @@ import javax.inject.Singleton
 class ExportManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
-    private val dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy")
+    private val dateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.ENGLISH)
+
+    fun uriFor(file: File): Uri = FileProvider.getUriForFile(context, "${context.packageName}.exports", file)
 
     fun exportToCsv(expenses: List<Expense>): Result<File> = runCatching {
         val dir = getExportDir()
@@ -38,9 +42,9 @@ class ExportManager @Inject constructor(
                         e.date.format(dateFormatter),
                         e.type.name,
                         e.category.label,
-                        "%.2f".format(e.amount),
+                        String.format(Locale.ROOT, "%.2f", e.amount),
                         e.currency,
-                        e.note,
+                        spreadsheetSafeText(e.note),
                         e.isRecurring.toString()
                     )
                 )
@@ -61,12 +65,13 @@ class ExportManager @Inject constructor(
         document.add(Paragraph("Expense Report", titleFont))
         document.add(Paragraph(" "))
 
-        val totalExpense = expenses.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
-        val totalIncome  = expenses.filter { it.type == TransactionType.INCOME  }.sumOf { it.amount }
         val summaryFont = Font(Font.FontFamily.HELVETICA, 11f, Font.NORMAL, BaseColor(80, 80, 80))
-        document.add(Paragraph("Total Income:  $${"%.2f".format(totalIncome)}", summaryFont))
-        document.add(Paragraph("Total Expense: $${"%.2f".format(totalExpense)}", summaryFont))
-        document.add(Paragraph("Balance:       $${"%.2f".format(totalIncome - totalExpense)}", summaryFont))
+        expenses.groupBy { it.currency }.toSortedMap().forEach { (currency, entries) ->
+            val income = entries.filter { it.type == TransactionType.INCOME }.sumOf { it.amount }
+            val spending = entries.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount }
+            document.add(Paragraph(String.format(Locale.ROOT,
+                "%s | Income: %.2f | Expenses: %.2f | Balance: %.2f", currency, income, spending, income - spending), summaryFont))
+        }
         document.add(Paragraph(" "))
 
         val table = PdfPTable(floatArrayOf(1.5f, 3f, 3f, 2f, 2f, 3f))
@@ -93,7 +98,7 @@ class ExportManager @Inject constructor(
                 e.date.format(dateFormatter),
                 e.type.name.lowercase().replaceFirstChar { it.uppercase() },
                 e.category.label,
-                "%.2f".format(e.amount),
+                String.format(Locale.ROOT, "%.2f", e.amount),
                 e.currency,
                 e.note.take(40)
             ).forEach { value ->
@@ -111,16 +116,8 @@ class ExportManager @Inject constructor(
     }
 
     private fun getExportDir(): File {
-        val dir = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "ExpenseTracker")
-        } else {
-            @Suppress("DEPRECATION")
-            File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                "ExpenseTracker"
-            )
-        }
-        if (!dir.exists()) dir.mkdirs()
+        val dir = File(context.filesDir, "exports")
+        check(dir.isDirectory || dir.mkdirs()) { "Could not create the report directory" }
         return dir
     }
 }

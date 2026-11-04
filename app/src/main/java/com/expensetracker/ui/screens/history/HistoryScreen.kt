@@ -48,7 +48,11 @@ fun HistoryScreen(
                     setDataAndType(s.uri, s.mimeType)
                     flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
                 }
-                context.startActivity(intent)
+                try {
+                    context.startActivity(intent)
+                } catch (_: android.content.ActivityNotFoundException) {
+                    snackbarHostState.showSnackbar("Report created. Install an app that opens this file type to view it.")
+                }
                 viewModel.clearExportStatus()
             }
             is ExportStatus.Error -> {
@@ -136,7 +140,10 @@ fun HistoryScreen(
 
             val expenses = state.filteredExpenses
             if (expenses.isNotEmpty()) {
-                val total = expenses.sumOf { if (it.type == TransactionType.EXPENSE) -it.amount else it.amount }
+                val totals = expenses.groupBy { it.currency }.toSortedMap().map { (currency, entries) ->
+                    val total = entries.sumOf { if (it.type == TransactionType.EXPENSE) -it.amount else it.amount }
+                    "$currency ${total.toCurrencyString(currency)}"
+                }.joinToString(" / ")
                 Surface(
                     color = MaterialTheme.colorScheme.surfaceVariant,
                     modifier = Modifier.fillMaxWidth()
@@ -153,7 +160,7 @@ fun HistoryScreen(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            "Net: ${total.toCurrencyString(state.currency)}",
+                            "Net: $totals",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -197,7 +204,6 @@ fun HistoryScreen(
                                     onClick = {
                                         navController.navigate(Screen.EditExpense.createRoute(expense.id))
                                     },
-                                    onDelete = { /* handled in edit screen */ }
                                 )
                             }
                         }

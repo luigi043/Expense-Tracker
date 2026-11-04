@@ -89,7 +89,7 @@ class HistoryViewModel @Inject constructor(
             exportManager.exportToCsv(expenses).fold(
                 onSuccess = { file ->
                     _exportStatus.value = ExportStatus.Success(
-                        uri = Uri.fromFile(file),
+                        uri = exportManager.uriFor(file),
                         mimeType = "text/csv"
                     )
                 },
@@ -107,7 +107,7 @@ class HistoryViewModel @Inject constructor(
             exportManager.exportToPdf(expenses).fold(
                 onSuccess = { file ->
                     _exportStatus.value = ExportStatus.Success(
-                        uri = Uri.fromFile(file),
+                        uri = exportManager.uriFor(file),
                         mimeType = "application/pdf"
                     )
                 },
