@@ -196,7 +196,7 @@ fun AddEditExpenseScreen(
             }
 
             OutlinedTextField(
-                value = state.date.format(DateTimeFormatter.ofPattern("dd MMMM yyyy")),
+                value = state.date.format(DateTimeFormatter.ofPattern("dd MMMM yyyy", java.util.Locale.ENGLISH)),
                 onValueChange = {},
                 label = { Text("Date") },
                 leadingIcon = { Icon(Icons.Default.CalendarToday, null) },

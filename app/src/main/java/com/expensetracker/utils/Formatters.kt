@@ -18,7 +18,7 @@ object Formatters {
         dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.ENGLISH)
 
     fun Double.toCurrencyString(currency: String = "USD"): String =
-        "%s %.2f".format(currencySymbol(currency), this)
+        "%s %.2f".format(Locale.ENGLISH, currencySymbol(currency), this)
 
     fun currencySymbol(code: String): String = when (code) {
         "USD" -> "$"; "EUR" -> "€"; "GBP" -> "£"; "JPY" -> "¥"

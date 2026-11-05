@@ -191,7 +191,7 @@ fun HistoryScreen(
                         grouped.forEach { (date, items) ->
                             item(key = date.toString()) {
                                 Text(
-                                    text = date.format(DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy")),
+                                    text = date.format(DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", java.util.Locale.ENGLISH)),
                                     style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(vertical = 4.dp)
@@ -224,7 +224,7 @@ private fun FilterPanel(
 ) {
     var showFromDatePicker by remember { mutableStateOf(false) }
     var showToDatePicker by remember { mutableStateOf(false) }
-    val fmt = DateTimeFormatter.ofPattern("dd MMM yyyy")
+    val fmt = DateTimeFormatter.ofPattern("dd MMM yyyy", java.util.Locale.ENGLISH)
 
     if (showFromDatePicker) {
         val dpState = rememberDatePickerState()
