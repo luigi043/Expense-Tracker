@@ -166,7 +166,7 @@ fun TransactionItem(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
-                    text = "${if (expense.type == TransactionType.INCOME) "+" else "-"} ${expense.amount.toCurrencyString(expense.currency)}",
+                    text = "${if (expense.type == TransactionType.INCOME) "+" else "-"} ${expense.amount.toCurrencyString(expense.currency)} ${expense.currency}",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                     color = if (expense.type == TransactionType.INCOME) AppColors.Success else AppColors.Error

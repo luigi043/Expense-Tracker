@@ -132,7 +132,7 @@ private fun RecurringCard(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = item.amount.toCurrencyString(item.currency),
+                    text = "${item.amount.toCurrencyString(item.currency)} ${item.currency}",
                     style = MaterialTheme.typography.bodySmall,
                     color = if (item.type == TransactionType.INCOME) AppColors.Success else AppColors.Error,
                     fontWeight = FontWeight.SemiBold
