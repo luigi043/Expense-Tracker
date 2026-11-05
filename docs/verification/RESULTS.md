@@ -18,6 +18,8 @@ Verified on 5 November 2026. The native evaluation used the existing API 35 `sdk
 | Dark-mode system bars | Native assertion passed; refreshed screenshot shows readable light icons |
 | Browser companion | Local and deployed Chromium workflows passed, including all mobile navigation screens and zero page errors |
 | Renamed public source links | Published HTML/JS return HTTP 200 and contain the current GitHub branch links |
+| Public APK | HTTP 200; all 24,237,392 bytes match the GitHub release SHA-256 |
+| Public native gallery | All 38 PNGs accessible; phone layout passed with zero browser errors |
 | `git diff --check` | Passed |
 | Live exchange service | Not run; placeholder key retained |
 | External report viewer UI | Not verified; depends on installed applications |
@@ -36,7 +38,15 @@ Raw results are under `evidence/`. [SCREEN-INDEX.md](SCREEN-INDEX.md) maps the a
 - Publication copy: `build/verification-artifacts/expense-tracker-debug.apk`.
 - SHA-256: `52DBF907F8BFD175723402E027D2D79CBDDF46DC80D76F9EA64F1CBE8855A08E`.
 
-The APK is debug signed and intended for evaluation. Signing keys are not committed. Publication provenance is recorded after upload; it does not change this APK or the tested app source.
+The APK is debug signed and intended for evaluation. Signing keys are not committed.
+
+- [Public APK download](https://expense-tracker-demo.hummingmole.chatgpt.site/expense-tracker-debug.apk)
+- [Public native gallery](https://expense-tracker-demo.hummingmole.chatgpt.site/native.html)
+- [GitHub prerelease](https://github.com/luigi043/Expense-Tracker/releases/tag/v1.0.0-evaluation-20261105), requires access to the private repository.
+- Release target: `0271beb6f99534687d5cbca67e199031a7300762`.
+- Asset size: 24,237,392 bytes. The GitHub asset digest and the hash streamed from the public download both match the checksum above.
+
+Publication metadata is in `evidence/release.json` and `evidence/public-artifacts.json`. Repository visibility was preserved. Public publication does not change the tested native app source.
 
 ## Logical Git sequence
 
@@ -49,8 +59,9 @@ The APK is debug signed and intended for evaluation. Signing keys are not commit
 | `10180c0` | Add the tested public browser companion and browser evidence |
 | `01f0d49` | Keep dates and decimal formatting in English under a Portuguese locale |
 | `18d2a73` | Enforce English app resources, disambiguate row currencies and repair dark system bars |
+| `0271beb` | Commit the native workflow/integration tests, 38 captures, screen index, reproduction script and evidence |
 
-The following verification commit adds the complete native tests, screen captures, reproducible script and documentation. The branch is `expense-tracker-verification`; commits use `Luiz Fehlberg <cluiz4003@outlook.pt>`. The original main branch has not been merged or overwritten.
+The final publication commit records the APK/gallery links, artifact checksums and reproducible packaging/check scripts. The branch is `expense-tracker-verification`; commits use `Luiz Fehlberg <cluiz4003@outlook.pt>`. The original main branch has not been merged or overwritten. The GitHub repository is private; the separate public demo and artifacts can be accessed without GitHub repository access.
 
 ## Remaining limits
 

@@ -21,3 +21,17 @@ Version 2 updates source links to the renamed `expense-tracker-verification` Git
 The hosting checkout contains only static demo files and its hosting manifest. The Android repository tracks the same demo source under `docs/demo`. No credentials, private app records or signing keys are included.
 
 Version 2 deployment: `appgdep_6aebd89b6ae08191ae3c514e77e9a22b`, succeeded. Published HTML and JavaScript were checked after the rename: HTTP 200, current branch links present, old branch links absent.
+
+## Public APK and native gallery
+
+Version 3 adds the verified debug APK and 38 real native screenshot assets. The source repository remains private; source and detailed GitHub evidence links are labeled accordingly.
+
+- Public APK: https://expense-tracker-demo.hummingmole.chatgpt.site/expense-tracker-debug.apk
+- Native gallery: https://expense-tracker-demo.hummingmole.chatgpt.site/native.html
+- Hosting source: `a1c2309b8d057a64db5a7c0d953896c279f2f1d0`
+- Saved version: `appgprj_6aebac7edfe48191bfeeca8d66272236~appgver_fa244d9d721081919df223a392d8d3c4`
+- Deployment: `appgdep_6aebdfd1c49c81919c8bce88f92a3d33`, succeeded
+- Public APK size: 24,237,392 bytes
+- SHA-256: `52DBF907F8BFD175723402E027D2D79CBDDF46DC80D76F9EA64F1CBE8855A08E`
+
+The final deployed companion passed its browser workflow checks again. The gallery passed phone-width layout and browser-error checks; every native PNG returned HTTP 200 with the expected image type. Streaming the public APK produced the exact GitHub release digest. The checks are reproducible through `scripts/package-demo.cjs`, `scripts/check-demo.cjs` and `scripts/check-artifacts.cjs`.

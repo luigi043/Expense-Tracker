@@ -1,0 +1,9 @@
+{
+  "gallery": "https://expense-tracker-demo.hummingmole.chatgpt.site/native.html",
+  "native_images": 38,
+  "apk": "https://expense-tracker-demo.hummingmole.chatgpt.site/expense-tracker-debug.apk",
+  "size": 24237392,
+  "digest": "sha256:52dbf907f8bfd175723402e027d2d79cbddf46dc80d76f9ea64f1cbe8855a08e",
+  "mobile_overflow": false,
+  "browser_errors": []
+}

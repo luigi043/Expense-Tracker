@@ -4,6 +4,10 @@ A native Android personal expense tracker built with Kotlin and Jetpack Compose.
 
 [Try the interactive browser demo](https://expense-tracker-demo.hummingmole.chatgpt.site) · [Verification](docs/verification/README.md) · [Screen index](docs/verification/SCREEN-INDEX.md)
 
+[Download the Android debug APK](https://expense-tracker-demo.hummingmole.chatgpt.site/expense-tracker-debug.apk) · [View 38 native screenshots](https://expense-tracker-demo.hummingmole.chatgpt.site/native.html)
+
+The demo, APK and gallery are public. This GitHub repository retains its private visibility; source and repository evidence links require access.
+
 The browser companion uses synthetic records and JavaScript. It does not execute Room, Android background work or live exchange-rate requests. Its data resets on reload.
 
 ## 🚀 Features

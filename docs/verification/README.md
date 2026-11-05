@@ -34,6 +34,9 @@ The active Android code is in `app/src/main`. The root-level Kotlin copies are h
 | Fixed-day recurrence labels implied calendar months | Explicit 30/90/365-day labels |
 | Long currency lists could be clipped | Scrollable dialogs |
 | Some dates and amounts inherited non-English locale formatting | Explicit English formatting with a Portuguese-locale regression case |
+| Date-picker resources could follow another device language | English activity resource context verified from Portuguese and Turkish contexts |
+| Dark theme retained dark system-bar icons | System-bar appearance follows the app theme, with a native assertion and refreshed screenshot |
+| Different currencies shared a visible symbol | ISO codes are shown alongside transaction and recurring amounts |
 
 ## Screens and dependencies
 
@@ -60,6 +63,8 @@ Only different-currency conversion needs an external service: exchangeratesapi.i
 `-SkipBuild` is appropriate only after the exact current source has passed its build. Native captures live in `native/`; their actions are mapped in [SCREEN-INDEX.md](SCREEN-INDEX.md). Raw native test output and JVM XML results are under `evidence/`.
 
 The public browser test is `node scripts/check-demo.cjs`. It accepts `PLAYWRIGHT_MODULE`, `CHROMIUM_PATH`, `DEMO_URL` and `SCREENSHOT_DIR` to reuse installed browser tooling and select the local or public page. [Public publication details](PUBLIC-DEMO.md) distinguish browser evidence from native evidence.
+
+`node scripts/package-demo.cjs` packages the browser companion, native gallery and previously verified APK into the separate hosting checkout. `node scripts/check-artifacts.cjs` checks all public native images, the phone-width gallery and the streamed public APK checksum against the GitHub release digest. The repository stays private; the separate public artifacts need no repository access.
 
 ## Known limits
 

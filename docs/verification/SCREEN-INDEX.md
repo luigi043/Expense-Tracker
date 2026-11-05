@@ -62,6 +62,8 @@ These images demonstrate JavaScript browser behavior, not native Android behavio
 | `07-settings.png` | Settings | Select EUR |
 | `08-mobile-overview.png` | Phone-width overview | Reset sample data at 390px width |
 
+`public/09-native-gallery.png` captures the phone-width public gallery page. It is a browser page displaying the real native captures, not another Android screen. The full native PNGs are linked individually at the [public gallery](https://expense-tracker-demo.hummingmole.chatgpt.site/native.html).
+
 ## External states and coverage limits
 
 The app has eight navigation destinations, all listed above. The converter has no verified live-rate success state because no real API key was supplied. The offline result and missing-configuration state are covered. CSV/PDF creation and content URI access are covered by a native integration test; an external viewer's UI is not part of this app and depends on installed software. Android-controlled background timing is not represented by a fabricated screenshot. The recurring processor is tested directly against an isolated in-memory Room database.
