@@ -19,3 +19,5 @@ Automated Chromium checks passed against both the local files and the deployed U
 Version 2 updates source links to the renamed `expense-tracker-verification` GitHub branch. Its source commit is `685610a67d4ed29133f5ece3110b9d8f56c9cf8b`; saved version is `appgprj_6aebac7edfe48191bfeeca8d66272236~appgver_8444b92c1d7c81919fa119ad656b05b5`. Interactive behavior is unchanged.
 
 The hosting checkout contains only static demo files and its hosting manifest. The Android repository tracks the same demo source under `docs/demo`. No credentials, private app records or signing keys are included.
+
+Version 2 deployment: `appgdep_6aebd89b6ae08191ae3c514e77e9a22b`, succeeded. Published HTML and JavaScript were checked after the rename: HTTP 200, current branch links present, old branch links absent.

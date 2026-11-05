@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.expensetracker.domain.model.DashboardCalculationsTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-11-05T01:33:48.811Z" hostname="TOOLS" time="0.021">
+  <properties/>
+  <testcase name="totalsAndChartsNeverAddDifferentCurrencies" classname="com.expensetracker.domain.model.DashboardCalculationsTest" time="0.021"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,68 @@
+INSTRUMENTATION_STATUS: class=com.expensetracker.ExportIntegrationTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=
+com.expensetracker.ExportIntegrationTest:
+INSTRUMENTATION_STATUS: test=exportsPrivateReportsWithContentUrisAndSeparateCurrencyTotals
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.expensetracker.ExportIntegrationTest
+INSTRUMENTATION_STATUS: current=1
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=exportsPrivateReportsWithContentUrisAndSeparateCurrencyTotals
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.expensetracker.NativeWalkthroughTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=
+com.expensetracker.NativeWalkthroughTest:
+INSTRUMENTATION_STATUS: test=walkThroughEveryNativeScreenUsingSyntheticTransactions
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.expensetracker.NativeWalkthroughTest
+INSTRUMENTATION_STATUS: current=2
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=walkThroughEveryNativeScreenUsingSyntheticTransactions
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.expensetracker.RecurringProcessingTest
+INSTRUMENTATION_STATUS: current=3
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=
+com.expensetracker.RecurringProcessingTest:
+INSTRUMENTATION_STATUS: test=processesDueTemplateAndDoesNotRepeatItBeforeNextDueDate
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.expensetracker.RecurringProcessingTest
+INSTRUMENTATION_STATUS: current=3
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=processesDueTemplateAndDoesNotRepeatItBeforeNextDueDate
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_STATUS: class=com.expensetracker.UiLocaleIntegrationTest
+INSTRUMENTATION_STATUS: current=4
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=
+com.expensetracker.UiLocaleIntegrationTest:
+INSTRUMENTATION_STATUS: test=englishUiOverridesPortugueseAndTurkishResourceContexts
+INSTRUMENTATION_STATUS_CODE: 1
+INSTRUMENTATION_STATUS: class=com.expensetracker.UiLocaleIntegrationTest
+INSTRUMENTATION_STATUS: current=4
+INSTRUMENTATION_STATUS: id=AndroidJUnitRunner
+INSTRUMENTATION_STATUS: numtests=4
+INSTRUMENTATION_STATUS: stream=.
+INSTRUMENTATION_STATUS: test=englishUiOverridesPortugueseAndTurkishResourceContexts
+INSTRUMENTATION_STATUS_CODE: 0
+INSTRUMENTATION_RESULT: stream=
+
+Time: 146.523
+
+OK (4 tests)
+
+
+INSTRUMENTATION_CODE: -1
